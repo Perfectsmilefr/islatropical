@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Isla Tropical — régie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=DM+Sans:wght@400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --nuit:#0C1A11;--jungle:#13251B;--jungle-clair:#1A2E20;--ligne:#2A4231;
+  --corail:#FF5A36;--rose:#FF8FB0;--ambre:#FFC55A;--creme:#FFF1E8;
+  --sourdine:#7FA08B;--eteint:#5E7A68;--vert:#5DCAA5;
+  --glow-rose:0 0 6px rgba(255,143,176,.9), 0 0 18px rgba(255,90,54,.55);
+  --sans:'DM Sans',system-ui,sans-serif;--display:'Fredoka',system-ui,sans-serif;--mono:'Space Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#070E09;color:var(--creme);font-family:var(--sans);font-size:15px;line-height:1.55;
+  display:flex;justify-content:center;padding:24px 16px}
+.app{width:100%;max-width:1080px;background:var(--nuit);border-radius:20px;overflow:hidden;min-height:700px}
+.screen{display:none}.screen.on{display:block}
+.zone{padding:22px 22px 30px}
+
+.bar{background:var(--corail);color:#2B0A02;padding:13px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.bar .marque{font-family:var(--display);font-size:19px;font-weight:600;letter-spacing:.04em}
+.bar .mono{font-family:var(--mono);font-size:11px;letter-spacing:.1em}
+.bar button{background:none;border:none;color:#2B0A02;font:inherit;font-size:13px;cursor:pointer;padding:5px 8px;border-radius:6px}
+.bar button:hover{background:rgba(0,0,0,.12)}
+
+h1{font-family:var(--display);font-size:25px;font-weight:600;margin:0}
+h2{font-family:var(--display);font-size:18px;font-weight:500;margin:0 0 12px}
+.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--rose);margin:0 0 6px}
+.entre{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+
+.btn{border:none;border-radius:999px;padding:11px 20px;font-family:var(--sans);font-size:14px;font-weight:500;cursor:pointer}
+.btn-primaire{background:var(--rose);color:#2A0A16;box-shadow:0 0 14px rgba(255,143,176,.4)}
+.btn-primaire:hover{background:#FFA5C1}
+.btn-fantome{background:none;border:1px solid var(--rose);color:var(--rose)}
+.btn-fantome:hover{background:rgba(255,143,176,.12)}
+.btn-mini{font-size:12px;padding:6px 13px;border-radius:999px;background:none;border:1px solid var(--ligne);
+  color:var(--sourdine);cursor:pointer;font-family:var(--sans);white-space:nowrap}
+.btn-mini:hover{border-color:var(--rose);color:var(--rose)}
+.btn-mini.fait{border-color:var(--vert);color:var(--vert)}
+
+/* vols */
+.vols{display:grid;gap:12px}
+.vol{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:14px;align-items:center;
+  background:var(--jungle);border:1px solid var(--ligne);border-radius:12px;padding:14px;
+  cursor:pointer;color:inherit;font:inherit;text-align:left;width:100%}
+.vol:hover{border-color:var(--rose)}
+.vol .vign{width:52px;height:52px;border-radius:8px;background:var(--jungle-clair);border:1px solid var(--ligne);
+  display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;color:var(--eteint)}
+.vol .t{font-family:var(--display);font-size:17px;font-weight:500;margin:0}
+.vol .m{font-family:var(--mono);font-size:11px;color:var(--ambre);margin:3px 0 0}
+.vol .l{font-size:12px;color:var(--sourdine);margin:2px 0 0}
+.vol .chiffre{text-align:right;font-family:var(--mono)}
+.vol .chiffre b{display:block;font-size:17px;color:var(--creme);font-weight:400}
+.vol .chiffre span{font-size:11px;color:var(--sourdine)}
+
+/* mesures */
+.mesures{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:22px}
+.mesure{background:var(--jungle);border-radius:12px;padding:14px 16px}
+.mesure .k{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--rose);margin:0 0 7px}
+.mesure .v{font-family:var(--mono);font-size:25px;margin:0;line-height:1.1}
+.mesure .v.amb{color:var(--ambre)}
+.mesure .v.rose{color:var(--rose);text-shadow:var(--glow-rose)}
+.mesure .s{font-size:12px;color:var(--sourdine);margin:5px 0 0}
+
+/* jauges */
+.jauge{margin-bottom:13px}
+.jauge .haut{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px}
+.jauge .nom{font-size:14px}
+.jauge .val{font-family:var(--mono);font-size:12px;color:var(--sourdine)}
+.jauge .piste{height:8px;border-radius:5px;background:var(--jungle-clair);overflow:hidden}
+.jauge .part{height:100%;border-radius:5px;background:var(--rose);box-shadow:0 0 10px rgba(255,143,176,.6)}
+.jauge .part.a{background:var(--ambre);box-shadow:0 0 10px rgba(255,197,90,.5)}
+.jauge .part.c{background:var(--corail);box-shadow:0 0 10px rgba(255,90,54,.5)}
+
+/* tableau passagers */
+.outils{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.outils input{flex:1;min-width:190px;margin:0}
+.tableau{width:100%;border-collapse:collapse;font-size:13px}
+.tableau th{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--rose);
+  text-align:left;padding:0 10px 9px;border-bottom:1px solid var(--ligne);font-weight:400;white-space:nowrap}
+.tableau td{padding:11px 10px;border-bottom:1px solid var(--jungle-clair);vertical-align:middle}
+.tableau tr:hover td{background:var(--jungle)}
+.tableau .mono{font-family:var(--mono);font-size:12px}
+.tableau .doux{color:var(--sourdine)}
+.enveloppe{overflow-x:auto}
+
+.pastille{font-size:11px;padding:3px 9px;border-radius:999px;white-space:nowrap;display:inline-block}
+.p-entre{background:rgba(93,202,165,.16);color:var(--vert)}
+.p-attente{background:rgba(255,197,90,.16);color:var(--ambre)}
+
+label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--rose);margin:0 0 5px}
+input,textarea,select{width:100%;background:var(--jungle);border:1px solid var(--ligne);border-radius:9px;
+  padding:11px 13px;color:var(--creme);font-family:var(--sans);font-size:15px;margin-bottom:14px}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--rose);box-shadow:0 0 0 1px var(--rose)}
+input::placeholder,textarea::placeholder{color:var(--eteint)}
+.duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:0 14px}
+.err{color:var(--corail);font-size:12px;margin:-10px 0 13px;display:none}
+.err.on{display:block}
+
+.depot{border:1px dashed var(--ligne);border-radius:12px;aspect-ratio:4/5;max-width:210px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+  color:var(--eteint);font-family:var(--mono);font-size:11px;text-align:center;padding:16px;
+  margin-bottom:16px;cursor:pointer}
+.depot:hover{border-color:var(--rose);color:var(--rose)}
+.depot .plus{font-size:30px;line-height:1}
+
+.classe-ligne{display:grid;grid-template-columns:minmax(0,1fr) 92px 92px auto;gap:10px;align-items:center;margin-bottom:10px}
+.classe-ligne input{margin:0}
+.classe-ligne button{background:none;border:none;color:var(--eteint);font-size:19px;cursor:pointer;padding:4px 8px}
+.classe-ligne button:hover{color:var(--corail)}
+
+.note{font-size:12px;color:var(--sourdine);line-height:1.5;margin:14px 0 0}
+.bloc{background:var(--jungle);border:1px solid var(--ligne);border-radius:12px;padding:18px;margin-bottom:20px}
+
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--rose);color:#2A0A16;
+  padding:12px 20px;border-radius:999px;font-size:14px;font-weight:500;box-shadow:0 0 22px rgba(255,143,176,.5);
+  opacity:0;pointer-events:none;transition:opacity .22s}
+.toast.on{opacity:1}
+:focus-visible{outline:2px solid var(--ambre);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- LISTE DES VOLS -->
+  <section class="screen on" id="ec-vols">
+    <div class="bar"><span class="marque">Isla Tropical</span><span class="mono">Régie</span></div>
+    <div class="zone">
+      <div class="entre">
+        <div>
+          <h1>Vos événements</h1>
+          <p class="note" style="margin:5px 0 0">Trois événements programmés · 2 en vente</p>
+        </div>
+        <button class="btn btn-primaire" onclick="ouvrirCreation()">Créer un événement</button>
+      </div>
+      <div class="mesures">
+        <div class="mesure"><p class="k">Billets vendus</p><p class="v" id="g-vendus">0</p><p class="s">tous vols confondus</p></div>
+        <div class="mesure"><p class="k">Encaissé</p><p class="v amb" id="g-ca">0 €</p><p class="s">net de remboursements</p></div>
+        <div class="mesure"><p class="k">Potentiel restant</p><p class="v rose" id="g-reste">0 €</p><p class="s">si tout se vend</p></div>
+      </div>
+      <div class="vols" id="liste-vols"></div>
+    </div>
+  </section>
+
+  <!-- DÉTAIL D'UN VOL -->
+  <section class="screen" id="ec-vol">
+    <div class="bar">
+      <button onclick="montrer('ec-vols')">← Vos événements</button>
+      <span class="mono" id="d-vol">IT-074</span>
+    </div>
+    <div class="zone">
+      <div class="entre">
+        <div>
+          <p class="eyebrow" id="d-quand">14 nov. 26 · embarquement 23:00</p>
+          <h1 id="d-titre">Jungle Fever</h1>
+          <p class="note" style="margin:5px 0 0" id="d-lieu">Le Garage, Annecy</p>
+        </div>
+        <button class="btn btn-fantome" onclick="ouvrirEdition()">Modifier l'événement</button>
+      </div>
+
+      <div class="mesures">
+        <div class="mesure"><p class="k">Billets vendus</p><p class="v" id="d-vendus">0</p><p class="s" id="d-capa">sur 0 places</p></div>
+        <div class="mesure"><p class="k">Encaissé</p><p class="v amb" id="d-ca">0 €</p><p class="s" id="d-moyen">panier moyen 0 €</p></div>
+        <div class="mesure"><p class="k">Projection</p><p class="v rose" id="d-proj">0 €</p><p class="s">si l'événement se remplit</p></div>
+        <div class="mesure"><p class="k">Entrés</p><p class="v" id="d-entres">0</p><p class="s">enregistrés à la porte</p></div>
+      </div>
+
+      <div class="bloc">
+        <h2>Remplissage par classe</h2>
+        <div id="d-jauges"></div>
+      </div>
+
+      <h2>Passagers</h2>
+      <div class="outils">
+        <input id="recherche" placeholder="Chercher un nom, un e-mail, une référence" oninput="rendrePassagers()" style="margin:0">
+        <button class="btn-mini" onclick="exporter()">Exporter en CSV</button>
+        <button class="btn-mini" onclick="renvoyerTout()">Tout renvoyer</button>
+      </div>
+      <div class="enveloppe">
+        <table class="tableau">
+          <thead><tr>
+            <th>Passager</th><th>Contact</th><th>Classe</th><th>Réf.</th><th>Entrée</th><th></th>
+          </tr></thead>
+          <tbody id="corps-passagers"></tbody>
+        </table>
+      </div>
+      <p class="note">Les coordonnées ne servent qu'à l'envoi des billets et à vous joindre en cas d'annulation. Prévoyez une suppression automatique quelques mois après la soirée.</p>
+    </div>
+  </section>
+
+  <!-- CRÉATION / ÉDITION -->
+  <section class="screen" id="ec-form">
+    <div class="bar">
+      <button onclick="montrer(retour)">← Retour</button>
+      <span class="mono" id="f-mode">Nouveau vol</span>
+    </div>
+    <div class="zone" style="max-width:620px">
+      <h1 style="margin-bottom:20px" id="f-titre-page">Créer un événement</h1>
+
+      <label for="f-nom">Nom de la soirée</label>
+      <input id="f-nom" placeholder="Jungle Fever">
+      <p class="err" id="e-nom">Donnez un nom à la soirée.</p>
+
+      <div class="duo">
+        <div>
+          <label for="f-date">Date</label>
+          <input id="f-date" type="date">
+        </div>
+        <div>
+          <label for="f-heure">Embarquement</label>
+          <input id="f-heure" type="time" value="23:00">
+        </div>
+      </div>
+      <p class="err" id="e-date">Choisissez une date.</p>
+
+      <label for="f-lieu">Lieu</label>
+      <input id="f-lieu" placeholder="Le Garage, Annecy">
+
+      <label for="f-ville">Code de départ</label>
+      <input id="f-ville" placeholder="ANN" maxlength="3" style="font-family:var(--mono);letter-spacing:.14em;text-transform:uppercase;max-width:130px">
+
+      <label>Flyer</label>
+      <div class="depot" onclick="alert('Sur le site réel, ce bloc ouvre le sélecteur de fichiers et envoie l\'image dans Supabase Storage.')">
+        <span class="plus">+</span>
+        <span>Déposez le flyer<br>1080 × 1350</span>
+      </div>
+
+      <label for="f-desc">Description</label>
+      <textarea id="f-desc" rows="3" placeholder="Line-up, dress code, âge minimum…"></textarea>
+
+      <h2 style="margin-top:8px">Classes et quotas</h2>
+      <div id="f-classes"></div>
+      <button class="btn-mini" onclick="ajouterClasse()">+ Ajouter une classe</button>
+
+      <div style="display:flex;gap:11px;margin-top:26px;flex-wrap:wrap">
+        <button class="btn btn-primaire" onclick="enregistrer()">Enregistrer le vol</button>
+        <button class="btn btn-fantome" onclick="montrer(retour)">Annuler</button>
+      </div>
+      <p class="note">Un événement enregistré reste en brouillon tant que vous ne l'avez pas mis en vente.</p>
+    </div>
+  </section>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const PRENOMS=['Lucas','Emma','Nadia','Thomas','Chloé','Yanis','Sarah','Mehdi','Julie','Antoine','Inès','Rayan','Camille','Léa','Hugo','Manon','Karim','Alice','Enzo','Sofia'];
+const NOMS=['Perrin','Baltet','Rey','Dumont','Fontaine','Bouvier','Charvet','Marin','Gay','Lebrun','Vial','Amrani','Excoffier','Pernet','Roux','Dubois'];
+
+function passagersFactices(n,classes){
+  const out=[];
+  for(let i=0;i<n;i++){
+    const p=PRENOMS[i%PRENOMS.length], f=NOMS[(i*7)%NOMS.length];
+    const c=classes[i%classes.length];
+    out.push({prenom:p,nom:f,
+      mail:`${p.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}.${f.toLowerCase()}@exemple.fr`,
+      tel:`+336${String(10000000+((i*8675309)%89999999)).slice(0,8)}`,
+      classe:c.nom,prix:c.prix,ref:refDe(i),entre:i%3!==0});
+  }
+  return out;
+}
+function refDe(i){
+  const a='ACDEFGHJKLMNPQRSTUVWXYZ23456789';let h=(i+1)*2654435761%4294967296,s='';
+  for(let k=0;k<6;k++){h=(h*1103515245+12345)>>>0;s+=a[h%a.length];}
+  return s;
+}
+
+const VOLS=[
+  {vol:'IT-074',titre:'Jungle Fever',lieu:'Le Garage, Annecy',depart:'ANN',date:'2026-11-14',dateTxt:'14 nov. 26',heure:'23:00',
+   classes:[{nom:'Plage',prix:12,quota:120,vendus:120},{nom:'Lagon',prix:18,quota:50,vendus:47},{nom:'Première',prix:35,quota:30,vendus:21}]},
+  {vol:'IT-118',titre:'Sunset Boat Party',lieu:"Lac d'Annecy",depart:'ANN',date:'2026-12-06',dateTxt:'6 déc. 26',heure:'19:00',
+   classes:[{nom:'Plage',prix:25,quota:80,vendus:40},{nom:'Lagon',prix:38,quota:40,vendus:18},{nom:'Première',prix:60,quota:20,vendus:12}]},
+  {vol:'IT-031',titre:'Nouvel An Tropical',lieu:'Lieu secret, Genève',depart:'GVA',date:'2026-12-31',dateTxt:'31 déc. 26',heure:'22:00',
+   classes:[{nom:'Plage',prix:30,quota:150,vendus:150},{nom:'Première',prix:75,quota:50,vendus:50}]}
+];
+VOLS.forEach(v=>{
+  v.passagers=passagersFactices(v.classes.reduce((s,c)=>s+c.vendus,0),v.classes);
+  v.renvoyes=new Set();
+});
+
+let volActif=VOLS[0],retour='ec-vols',edition=false;
+const eur=n=>n.toLocaleString('fr-FR')+' €';
+const vendus=v=>v.classes.reduce((s,c)=>s+c.vendus,0);
+const capacite=v=>v.classes.reduce((s,c)=>s+c.quota,0);
+const encaisse=v=>v.classes.reduce((s,c)=>s+c.vendus*c.prix,0);
+const potentiel=v=>v.classes.reduce((s,c)=>s+c.quota*c.prix,0);
+
+function montrer(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));
+  window.scrollTo(0,0);
+}
+function toast(t){
+  const el=document.getElementById('toast');el.textContent=t;el.classList.add('on');
+  clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),2600);
+}
+
+function rendreVols(){
+  document.getElementById('liste-vols').innerHTML=VOLS.map(v=>{
+    const n=vendus(v),c=capacite(v);
+    return `<button class="vol" onclick="ouvrirVol('${v.vol}')">
+      <span class="vign">${v.depart}</span>
+      <span>
+        <p class="t">${v.titre}</p>
+        <p class="m">${v.vol} · ${v.dateTxt} · ${v.heure}</p>
+        <p class="l">${v.lieu}</p>
+      </span>
+      <span class="chiffre"><b>${n}/${c}</b><span>${eur(encaisse(v))}</span></span>
+    </button>`;}).join('');
+  document.getElementById('g-vendus').textContent=VOLS.reduce((s,v)=>s+vendus(v),0);
+  document.getElementById('g-ca').textContent=eur(VOLS.reduce((s,v)=>s+encaisse(v),0));
+  document.getElementById('g-reste').textContent=eur(VOLS.reduce((s,v)=>s+potentiel(v)-encaisse(v),0));
+}
+
+function ouvrirVol(code){
+  volActif=VOLS.find(v=>v.vol===code);retour='ec-vol';
+  const v=volActif,n=vendus(v),c=capacite(v),ca=encaisse(v);
+  document.getElementById('d-vol').textContent=v.vol;
+  document.getElementById('d-titre').textContent=v.titre;
+  document.getElementById('d-quand').textContent=`${v.dateTxt} · embarquement ${v.heure}`;
+  document.getElementById('d-lieu').textContent=v.lieu;
+  document.getElementById('d-vendus').textContent=n;
+  document.getElementById('d-capa').textContent=`sur ${c} places`;
+  document.getElementById('d-ca').textContent=eur(ca);
+  document.getElementById('d-moyen').textContent=`panier moyen ${n?Math.round(ca/n):0} €`;
+  document.getElementById('d-proj').textContent=eur(potentiel(v));
+  document.getElementById('d-entres').textContent=v.passagers.filter(p=>p.entre).length;
+  document.getElementById('d-jauges').innerHTML=v.classes.map((cl,i)=>{
+    const pct=Math.round(cl.vendus/cl.quota*100);
+    return `<div class="jauge">
+      <div class="haut"><span class="nom">${cl.nom} · ${cl.prix} €</span>
+        <span class="val">${cl.vendus}/${cl.quota} · ${eur(cl.vendus*cl.prix)}</span></div>
+      <div class="piste"><div class="part ${['','a','c'][i%3]}" style="width:${pct}%"></div></div>
+    </div>`;}).join('');
+  document.getElementById('recherche').value='';
+  rendrePassagers();
+  montrer('ec-vol');
+}
+
+function rendrePassagers(){
+  const q=document.getElementById('recherche').value.trim().toLowerCase();
+  const l=volActif.passagers.filter(p=>!q||
+    `${p.prenom} ${p.nom} ${p.mail} ${p.ref} ${p.tel}`.toLowerCase().includes(q));
+  document.getElementById('corps-passagers').innerHTML=l.length?l.map(p=>`
+    <tr>
+      <td>${p.prenom} ${p.nom}</td>
+      <td class="doux"><span class="mono">${p.mail}</span><br><span class="mono">${p.tel}</span></td>
+      <td>${p.classe}</td>
+      <td class="mono">${p.ref}</td>
+      <td>${p.entre?'<span class="pastille p-entre">Entré</span>':'<span class="pastille p-attente">Attendu</span>'}</td>
+      <td><button class="btn-mini ${volActif.renvoyes.has(p.ref)?'fait':''}" onclick="renvoyer('${p.ref}')">
+        ${volActif.renvoyes.has(p.ref)?'Renvoyé':'Renvoyer le billet'}</button></td>
+    </tr>`).join('')
+    :'<tr><td colspan="6" class="doux" style="padding:22px 10px">Aucun passager ne correspond.</td></tr>';
+}
+
+function renvoyer(ref){
+  const p=volActif.passagers.find(x=>x.ref===ref);
+  volActif.renvoyes.add(ref);rendrePassagers();
+  toast(`Carte d'embarquement renvoyée à ${p.mail}`);
+}
+function renvoyerTout(){
+  volActif.passagers.forEach(p=>volActif.renvoyes.add(p.ref));rendrePassagers();
+  toast(`${volActif.passagers.length} cartes d'embarquement renvoyées`);
+}
+
+function exporter(){
+  const l=[['Prénom','Nom','E-mail','Téléphone','Classe','Prix','Référence','Entré']].concat(
+    volActif.passagers.map(p=>[p.prenom,p.nom,p.mail,p.tel,p.classe,p.prix,p.ref,p.entre?'oui':'non']));
+  const csv=l.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(';')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));
+  a.download=`passagers-${volActif.vol}.csv`;a.click();
+  toast('Liste exportée');
+}
+
+let brouillon=[];
+function ouvrirCreation(){
+  edition=false;retour='ec-vols';
+  document.getElementById('f-mode').textContent='Nouvel événement';
+  document.getElementById('f-titre-page').textContent='Créer un événement';
+  ['f-nom','f-lieu','f-ville','f-desc','f-date'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('f-heure').value='23:00';
+  brouillon=[{nom:'Plage',prix:12,quota:120},{nom:'Lagon',prix:18,quota:50},{nom:'Première',prix:35,quota:30}];
+  rendreClasses();montrer('ec-form');
+}
+function ouvrirEdition(){
+  edition=true;retour='ec-vol';
+  document.getElementById('f-mode').textContent=volActif.vol;
+  document.getElementById('f-titre-page').textContent="Modifier l'événement";
+  document.getElementById('f-nom').value=volActif.titre;
+  document.getElementById('f-lieu').value=volActif.lieu;
+  document.getElementById('f-ville').value=volActif.depart;
+  document.getElementById('f-date').value=volActif.date;
+  document.getElementById('f-heure').value=volActif.heure;
+  brouillon=volActif.classes.map(c=>({nom:c.nom,prix:c.prix,quota:c.quota}));
+  rendreClasses();montrer('ec-form');
+}
+function rendreClasses(){
+  document.getElementById('f-classes').innerHTML=brouillon.map((c,i)=>`
+    <div class="classe-ligne">
+      <input value="${c.nom}" placeholder="Nom" oninput="majClasse(${i},'nom',this.value)">
+      <input value="${c.prix}" type="number" min="0" placeholder="Prix" oninput="majClasse(${i},'prix',this.value)">
+      <input value="${c.quota}" type="number" min="1" placeholder="Quota" oninput="majClasse(${i},'quota',this.value)">
+      <button onclick="retirerClasse(${i})" aria-label="Retirer la classe">×</button>
+    </div>`).join('');
+}
+function majClasse(i,k,v){brouillon[i][k]=k==='nom'?v:+v;}
+function ajouterClasse(){brouillon.push({nom:'',prix:0,quota:50});rendreClasses();}
+function retirerClasse(i){brouillon.splice(i,1);rendreClasses();}
+
+function enregistrer(){
+  const nom=document.getElementById('f-nom').value.trim();
+  const date=document.getElementById('f-date').value;
+  document.getElementById('e-nom').classList.toggle('on',!nom);
+  document.getElementById('e-date').classList.toggle('on',!date);
+  if(!nom||!date)return;
+  const classes=brouillon.filter(c=>c.nom.trim());
+  if(edition){
+    volActif.titre=nom;volActif.lieu=document.getElementById('f-lieu').value.trim();
+    volActif.depart=document.getElementById('f-ville').value.trim().toUpperCase()||'ANN';
+    volActif.date=date;volActif.heure=document.getElementById('f-heure').value;
+    volActif.dateTxt=joli(date);
+    volActif.classes=classes.map(c=>{
+      const a=volActif.classes.find(x=>x.nom===c.nom);
+      return {...c,vendus:Math.min(a?a.vendus:0,c.quota)};});
+    rendreVols();ouvrirVol(volActif.vol);toast('Événement mis à jour');
+  }else{
+    const v={vol:'IT-'+String(Math.floor(Math.random()*900)+100),titre:nom,
+      lieu:document.getElementById('f-lieu').value.trim()||'Lieu à préciser',
+      depart:document.getElementById('f-ville').value.trim().toUpperCase()||'ANN',
+      date,dateTxt:joli(date),heure:document.getElementById('f-heure').value,
+      classes:classes.map(c=>({...c,vendus:0})),passagers:[],renvoyes:new Set()};
+    VOLS.push(v);rendreVols();montrer('ec-vols');toast(`Événement ${v.vol} créé en brouillon`);
+  }
+}
+function joli(d){
+  const m=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+  const [a,b,c]=d.split('-');return `${+c} ${m[+b-1]} ${a.slice(2)}`;
+}
+
+rendreVols();
+</script>
+</body>
+</html>
